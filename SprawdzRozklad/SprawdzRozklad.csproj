@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Icons\eraser-14546.png" />
+    <None Remove="Icons\folder-1485.png" />
+    <None Remove="Icons\play-button-4211.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.OleDb" Version="9.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\play-button-4211.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\eraser-14546.png" />
+    <Resource Include="Icons\folder-1485.png" />
+  </ItemGroup>
+
+</Project>
