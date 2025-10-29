@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SprawdzRozklad"
         mc:Ignorable="d"
-        Title="Sprawdź Rozkład" Height="700" Width="700"
+        Title="SRJ Tool" Height="700" Width="700"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="42"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid Grid.Row ="0">
@@ -55,8 +56,6 @@
 
                 </Grid>
 
-
-
                 <Button Grid.Column="3" Click="Start_Click" Padding="5" HorizontalAlignment="Left" Margin="10,10,0,0" Background="#FFF9F9F9" BorderBrush="#4ec15c">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Image Source="/Icons/play-button-4211.png" Width="15" Height="15" Margin="0,0,5,0"/>
@@ -64,7 +63,12 @@
                     </StackPanel>
                 </Button>
             </Grid>
-            <TextBox Grid.Row="1"
+            <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="1" HorizontalAlignment="Right">
+                <TextBlock Text="Pomiń linie/kursy ważne do:" FontSize="10" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <DatePicker FontSize="10"  x:Name="validDatePicker" Width="100"/>
+            </StackPanel>
+
+            <TextBox Grid.Row="2"
     x:Name="textBox"
     FontSize="10"
     TextWrapping="Wrap"
@@ -74,7 +78,7 @@
     HorizontalScrollBarVisibility="Disabled"
     AcceptsReturn="True"
     Padding="10"
-    Margin="10"
+    Margin="10,0,10,10"
     Background="#FFF9F9F9"
     BorderBrush="#CCC"
     BorderThickness="1"

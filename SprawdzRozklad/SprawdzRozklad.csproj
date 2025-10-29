@@ -6,25 +6,47 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <AssemblyVersion>1.0</AssemblyVersion>
+    <PackageIcon>bus.png</PackageIcon>
+    <Title>SRJ Tool</Title>
+    <PackageId>SRJ Tool</PackageId>
+    <AssemblyName>SRJ Tool</AssemblyName>
+    <ApplicationIcon>Icons\bus.ico</ApplicationIcon>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Icons\bus.ico" />
     <None Remove="Icons\eraser-14546.png" />
     <None Remove="Icons\folder-1485.png" />
     <None Remove="Icons\play-button-4211.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Icons\bus.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NDbfReader" Version="2.4.0" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.10" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Icons\bus.ico" />
+    <Resource Include="Icons\bus.png" />
     <Resource Include="Icons\play-button-4211.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Icons\eraser-14546.png" />
     <Resource Include="Icons\folder-1485.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Icons\bus.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
