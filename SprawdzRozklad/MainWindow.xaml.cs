@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.OleDb;
 using System.IO;
@@ -6,6 +7,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 
 namespace SprawdzRozklad
@@ -20,7 +22,8 @@ namespace SprawdzRozklad
             InitializeComponent();
         }
 
-        string zipFilePath = String.Empty;
+        string zipFilePath = "";
+        string firma = "";
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -47,6 +50,9 @@ namespace SprawdzRozklad
                             string plainText = new TextRange(rtb.Document.ContentStart, rtb.Document.ContentEnd).Text;                          
                             string[] lines = plainText.Split("\n");
                             string dane = lines.FirstOrDefault(x=>x.Contains("Dane firmy:"));
+
+                            string[] line = dane.Split(":");
+                            firma = line[1];
                             string lic = lines.FirstOrDefault(x => x.Contains("Licencja:"));
 
                             companyNr.Text = $"{dane}\n{lic}";
@@ -56,104 +62,71 @@ namespace SprawdzRozklad
                     {
                         MessageBox.Show($"Nie znaleziono pliku '{archiwumInfo}' w archiwum.");
                     }
+                    textBox.Text = "";
                 }
             }
         }
 
-        private void Start_Click(object sender, RoutedEventArgs e)
+        private async void Start_Click(object sender, RoutedEventArgs e)
         {
             textBox.Text = "";
-            CheckLines();
+            await CheckLines();
+            int charCount = (int)(textBox.ActualWidth / 5);
+            textBox.Text += ("\n" + new string('_', charCount) +"\n\n");
+            //await CheckRoutes();
         }
 
-        private void CheckLines()
+        private async Task CheckLines()
         {
             string tempPathTrasy = "";
-            string tempPathLinie = "";
             string trasyFile = "trasylinii.dbf";
+            string tempPathLinie = "";
             string linieFile = "linie.dbf";
 
             using (ZipArchive archive = ZipFile.OpenRead(zipFilePath))
             {
-                var entryLinie = archive.Entries
-                    .FirstOrDefault(e => e.Name.Equals(linieFile, StringComparison.OrdinalIgnoreCase));
-                if (entryLinie != null)
-                {
-                    tempPathLinie = Path.Combine(Path.GetTempPath(), entryLinie.Name.ToLower());
-                    entryLinie.ExtractToFile(tempPathLinie, true);
-                    textBox.Text += $"Plik Linie.DBF zapisany tymczasowo: {tempPathLinie}\n";
-                }
 
                 var entryTrasy = archive.Entries
                     .FirstOrDefault(e => e.Name.Equals(trasyFile, StringComparison.OrdinalIgnoreCase));
+                var entryLinie = archive.Entries
+                   .FirstOrDefault(e => e.Name.Equals(linieFile, StringComparison.OrdinalIgnoreCase));
                 if (entryTrasy != null)
                 {
                     tempPathTrasy = Path.Combine(Path.GetTempPath(), entryTrasy.Name.ToLower());
                     entryTrasy.ExtractToFile(tempPathTrasy, true);
                     textBox.Text += $"Plik TRASYLINII.DBF zapisany tymczasowo: {tempPathTrasy}\n";
                 }
+                if (entryLinie != null)
+                {
+                    tempPathLinie = Path.Combine(Path.GetTempPath(), entryLinie.Name.ToLower());
+                    entryLinie.ExtractToFile(tempPathLinie, true);
+                    textBox.Text += $"Plik LINIE.DBF zapisany tymczasowo: {tempPathLinie}\n";
+                }
             }
-
-
-            HashSet<string> activeLines = new HashSet<string>();
-            string linieDbPath = Path.GetDirectoryName(tempPathLinie);
-            string connStrLinie = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={linieDbPath};Extended Properties=dBASE IV;";
-
-            using (OleDbConnection conn = new OleDbConnection(connStrLinie))
-            {
-                conn.Open();
-                string query = $"SELECT * FROM [{linieFile}]";
-                OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn);
-                DataTable dtLinie = new DataTable();
-                adapter.Fill(dtLinie);
-
-                activeLines = dtLinie.AsEnumerable()
-                    .Where(r =>
-                    {
-                        if (r["STATLINII"].ToString().Trim() != "2")
-                            return false;
-
-                        if (r["NRF"].ToString().Trim() != "1211")
-                            return false;
-
-                        string dateStr = r["WAZNADO"].ToString().Trim();
-                        if (string.IsNullOrEmpty(dateStr))
-                            return true;
-                        if (DateTime.TryParse(dateStr, out DateTime dtWaznado))
-                            return dtWaznado > new DateTime(2023, 1, 1);
-                        return false;
-                    })
-                    .Select(r => r["NRLINII"].ToString().Trim())
-                    .Where(nr => !string.IsNullOrEmpty(nr))
-                    .ToHashSet();
-            }
-
-            List<DataRow> filteredRows;
+            List<DataRow> wszystkieTrasyLinii;
             string trasyDbPath = Path.GetDirectoryName(tempPathTrasy);
             string connStrTrasy = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={trasyDbPath};Extended Properties=dBASE IV;";
             using (OleDbConnection conn = new OleDbConnection(connStrTrasy))
             {
                 conn.Open();
-                string query = $"SELECT NRLINII, NRPRZYST, NAZPRZYST, WAZNAOD, Kod2 FROM [{trasyFile}]";
+                string query = $"SELECT * FROM [{trasyFile}]";
                 OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
 
-                filteredRows = dt.AsEnumerable()
-                    .Where(r => activeLines.Contains(r["NRLINII"].ToString().Trim()))
-                    .OrderBy(r => int.Parse(r["NRLINII"].ToString().Trim()))
-                    .ThenBy(r =>
-                    {
-                        string dateStr = r["WAZNAOD"].ToString().Trim();
-                        if (DateTime.TryParse(dateStr, out DateTime dt)) return dt;
-                        return DateTime.MinValue;
-                    })
-                    .ThenBy(r => int.Parse(r["NRPRZYST"].ToString().Trim()))
-                    .ToList();
+                wszystkieTrasyLinii = dt.AsEnumerable().ToList();
+
             }
 
-            
-            textBox.Text += "Rozpoczynam sprawdzanie pliku TRASYLINII.DBF\n";
+            List<DataRow> filteredRows = wszystkieTrasyLinii
+                .Where(r => wszystkieTrasyLinii.Any(s=>s["NRF"].ToString().Trim() == firma))
+                    .OrderBy(r => int.Parse(r["NRLINII"].ToString().Trim()))
+                    .ThenBy(r => int.Parse(r["WARLINII"].ToString().Trim()))
+                    .ThenBy(r => int.Parse(r["NRPRZYST"].ToString().Trim()))
+                    .ToList();
+
+
+            textBox.Text += $"\nRozpoczynam sprawdzanie pliku TRASYLINII.DBF  filtered:{filteredRows.Count}\n";
             textBox.Text += "Sprawdzanie powtórzeń przystanków w kolejnych rekordach:\n";
 
             int lastNr = -1;
@@ -169,6 +142,8 @@ namespace SprawdzRozklad
                 int currentStop = int.Parse(row["NRPRZYST"].ToString().Trim());
                 string currentKod2 = row["Kod2"].ToString().Trim();
                 string currentStopName = row["NAZPRZYST"].ToString().Trim();
+                string wariant = row["WARLINII"].ToString().Trim();
+                string[] dateFrom = row["WAZNAOD"].ToString().Split(" ");
 
                 bool newLine = currentNr != lastNr || currentStop <= lastStopNr;
                 if (newLine)
@@ -180,31 +155,121 @@ namespace SprawdzRozklad
 
                 if (!newLine && currentKod2 == lastKod2 && currentStopName == lastStopName)
                 {
-                    textBox.Text += $"\nUWAGA: NRLINII {currentNr}, przystanek {currentStopName} powtarza Kod2: {currentKod2}\n";
+                  
+                    textBox.Text += $"\nUWAGA Powtarzający się przystanek: Linia: {currentNr}, Wariant: {wariant}, Ważna Od: {dateFrom[0]}, Nazwa Przystanku: {currentStopName}, Kod2: {currentKod2}\n";
                     errors++;
+                    
                     Application.Current.Dispatcher.Invoke(
                         System.Windows.Threading.DispatcherPriority.Background,
-                        new Action(delegate { }));
+                        new Action(delegate { }));                
                 }
-
                 lastNr = currentNr;
                 lastStopNr = currentStop;
                 lastKod2 = currentKod2;
                 lastStopName = currentStopName;
             }
-            if (errors == 0) textBox.Text += $"\nZnaleziono 0 błędów.\n";
-            textBox.Text += $"\nProcedura zakończona. Sprawdzono {checkedLines} linii.\n";
-            
+            if (errors == 0)
+            {             
+                textBox.Text += $"\nNie znaleziono błędów.\n";              
+            }
+            else
+            {
+                textBox.Text += $"\nZnaleziono błędów: {errors}.\n";
+            }
+                textBox.Text += $"\nProcedura zakończona. Sprawdzono {checkedLines} linii.\n";          
         }
 
+        private async Task CheckRoutes()
+        {
+            string tempPathTrasy = "";
+            string trasyFile = "trasykursow.dbf";
+
+            using (ZipArchive archive = ZipFile.OpenRead(zipFilePath))
+            {
+
+                var entryTrasy = archive.Entries
+                    .FirstOrDefault(e => e.Name.Equals(trasyFile, StringComparison.OrdinalIgnoreCase));
+                if (entryTrasy != null)
+                {
+                    tempPathTrasy = Path.Combine(Path.GetTempPath(), entryTrasy.Name.ToLower());
+                    entryTrasy.ExtractToFile(tempPathTrasy, true);
+                    textBox.Text += $"Plik TRASYKURSOW.DBF zapisany tymczasowo: {tempPathTrasy}\n";
+                }
+            }
+            List<DataRow> filteredRows;
+            string trasyDbPath = Path.GetDirectoryName(tempPathTrasy);
+            string connStrTrasy = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={trasyDbPath};Extended Properties=dBASE IV;";
+            using (OleDbConnection conn = new OleDbConnection(connStrTrasy))
+            {
+                conn.Open();
+                string query = $"SELECT * FROM [{trasyFile}]";
+                OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
 
 
+                filteredRows = dt.AsEnumerable()
+                    .OrderBy(r => int.Parse(r["NRKURSU"].ToString().Trim()))
+                    .ThenBy(r => int.Parse(r["WARIANT"].ToString().Trim()))
+                    .ThenBy(r => int.Parse(r["NRPRZYST"].ToString().Trim()))
+                    .ToList();
+            }
 
+            textBox.Text += "\nRozpoczynam sprawdzanie pliku TRASYKURSOW.DBF\n";
+            textBox.Text += "Sprawdzanie powtórzeń przystanków w kolejnych rekordach:\n";
 
+            int lastNr = -1;
+            string lastStopName = "";
+            string lastKod2 = "";
+            int lastStopNr = -1;
+            int checkedLines = 0;
+            int errors = 0;
 
+            foreach (DataRow row in filteredRows)
+            {
+                int currentNr = int.Parse(row["NRKURSU"].ToString().Trim());
+                int currentStop = int.Parse(row["NRPRZYST"].ToString().Trim());
+                string currentKod2 = row["KOD2"].ToString().Trim();
+                string currentStopName = row["NAZPRZYST"].ToString().Trim();
+                string wariant = row["WARIANT"].ToString().Trim();
+                string[] dateFrom = row["WAZNYOD"].ToString().Split(" ");
+
+                bool newLine = currentNr != lastNr || currentStop <= lastStopNr;
+                if (newLine)
+                {
+                    checkedLines++;
+                    lastKod2 = "";
+                    lastStopName = "";
+                }
+
+                if (!newLine && currentKod2 == lastKod2 && currentStopName == lastStopName)
+                {
+
+                    textBox.Text += $"\nUWAGA Powtarzający się przystanek: Kurs: {currentNr}, Wariant: {wariant}, Ważny Od: {dateFrom[0]}, Nazwa Przystanku: {currentStopName}, Kod2: {currentKod2}\n";
+                    errors++;
+
+                    Application.Current.Dispatcher.Invoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        new Action(delegate { }));
+                }
+                lastNr = currentNr;
+                lastStopNr = currentStop;
+                lastKod2 = currentKod2;
+                lastStopName = currentStopName;
+            }
+            if (errors == 0)
+            {
+                textBox.Text += $"\nNie znaleziono błędów.\n";
+            }
+            else
+            {
+                textBox.Text += $"\nZnaleziono błędów: {errors}.\n";
+            }
+            textBox.Text += $"\nProcedura zakończona. Sprawdzono {checkedLines} kursów.\n";
+        }
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            
+            textBox.Text = "";
         }
         
     }
