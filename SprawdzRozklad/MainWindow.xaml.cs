@@ -16,6 +16,7 @@ namespace SprawdzRozklad
         public MainWindow()
         {
             InitializeComponent();
+            validDatePicker.SelectedDate = new DateTime(2023, 1, 1);
         }
 
         string zipFilePath = "";
@@ -42,6 +43,7 @@ namespace SprawdzRozklad
                     {
                         using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
                         {
+                            Dispatcher.Invoke(() => textBox.Text = "");
                             var rtb = new System.Windows.Controls.RichTextBox();
                             rtb.Selection.Load(entry.Open(), DataFormats.Rtf);
                             string plainText = new TextRange(rtb.Document.ContentStart, rtb.Document.ContentEnd).Text;
@@ -91,7 +93,7 @@ namespace SprawdzRozklad
 
             try
             {
-                textBox.Text = "";
+                Dispatcher.Invoke(() => textBox.Text = "");
 
 
                 await Task.Run(() =>
@@ -232,7 +234,7 @@ namespace SprawdzRozklad
 
                 if (!newGroup && currentKod2 == lastKod2)
                 {
-                    textBox.Text += $"\nUWAGA: Linia {currentNr}, wariant {currentWariant}, ważna od {currentWaznaOd:yyyy-MM-dd}, przystanek [ {lastStopName} ], kod2: [ {currentKod2} ] następuje jeden po drugim.\n";
+                    Dispatcher.Invoke(() => textBox.Text += $"\nUWAGA: Linia {currentNr}, wariant {currentWariant}, ważna od {currentWaznaOd:yyyy-MM-dd}, przystanek [ {lastStopName} ], kod2: [ {currentKod2} ] następuje jeden po drugim.\n");
                     errors++;
                     Application.Current.Dispatcher.Invoke(
                         System.Windows.Threading.DispatcherPriority.Background,
