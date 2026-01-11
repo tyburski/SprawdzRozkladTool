@@ -6,15 +6,15 @@
         xmlns:local="clr-namespace:SprawdzRozklad"
         mc:Ignorable="d"
         WindowStyle="None"
-        Title="SRJ Tool" Height="100" Width="250"
+        Title="SRJ Tool" Height="40" Width="160"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
-        Topmost="True">
-    <Border CornerRadius="10" Padding="20" Background="White">
+        Topmost="False">
+    <Border CornerRadius="20" Padding="5" Background="Transparent">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Proszę czekać..." FontSize="16" Margin="0,0,0,10" HorizontalAlignment="Center"/>
-            <ProgressBar IsIndeterminate="True" Width="200" Height="20"/>
+            <TextBlock Text="Proszę czekać..." FontSize="12" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+            <ProgressBar IsIndeterminate="True" Width="150" Height="15" VerticalAlignment="Bottom"/>
         </StackPanel>
     </Border>
 </Window>

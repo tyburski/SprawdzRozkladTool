@@ -17,9 +17,17 @@
 
   <ItemGroup>
     <None Remove="Icons\bus.ico" />
+    <None Remove="Icons\copy.png" />
     <None Remove="Icons\eraser-14546.png" />
     <None Remove="Icons\folder-1485.png" />
     <None Remove="Icons\play-button-4211.png" />
+    <None Remove="Icons\save.png" />
+    <None Remove="Icons\sql-server.png" />
+    <None Remove="Icons\zip-folder.png" />
+    <None Remove="Icons\zip.png" />
+    <None Remove="Skrypty\import_KartyPamieci.sql" />
+    <None Remove="Skrypty\import_KasyFiskalne.sql" />
+    <None Remove="Skrypty\import_Pracownicy.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,17 +37,26 @@
   <ItemGroup>
     <PackageReference Include="NDbfReader" Version="2.4.0" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.10" />
+    <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Icons\bus.ico" />
     <Resource Include="Icons\bus.png" />
+    <Resource Include="Icons\copy.png" />
     <Resource Include="Icons\play-button-4211.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Icons\eraser-14546.png" />
     <Resource Include="Icons\folder-1485.png" />
+    <Resource Include="Icons\save.png" />
+    <Resource Include="Icons\sql-server.png" />
+    <Resource Include="Icons\zip-folder.png" />
+    <Resource Include="Icons\zip.png" />
+    <EmbeddedResource Include="Skrypty\import_KartyPamieci.sql" />
+    <EmbeddedResource Include="Skrypty\import_KasyFiskalne.sql" />
+    <EmbeddedResource Include="Skrypty\import_Pracownicy.sql" />
   </ItemGroup>
 
   <ItemGroup>
