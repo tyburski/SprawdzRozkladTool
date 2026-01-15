@@ -1,5 +1,5 @@
-USE [%DB%]
-GO
+--USE [%DB%]
+--GO
 
 --tworzenie tabeli
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IMP_KartyPamieci]') AND type in (N'U'))

@@ -8,9 +8,9 @@
     <UseWPF>true</UseWPF>
     <AssemblyVersion>1.0</AssemblyVersion>
     <PackageIcon>bus.png</PackageIcon>
-    <Title>SRJ Tool</Title>
-    <PackageId>SRJ Tool</PackageId>
-    <AssemblyName>SRJ Tool</AssemblyName>
+    <Title>Informica Migration Tool</Title>
+    <PackageId>Informica Migration Tool</PackageId>
+    <AssemblyName>Informica Migration Tool</AssemblyName>
     <ApplicationIcon>Icons\bus.ico</ApplicationIcon>
     <SignAssembly>False</SignAssembly>
   </PropertyGroup>

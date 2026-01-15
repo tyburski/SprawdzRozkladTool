@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SprawdzRozklad"
         mc:Ignorable="d"
-        Title="SRJ Tool" Height="800" Width="800"
+        Title="Informica Migration Tool" Height="800" Width="800"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="0">
@@ -15,8 +15,8 @@
         </Grid.RowDefinitions>
 
         <TabControl SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="Sprawdzanie bazy" Tag="A"/>
-            <TabItem Header="Generowanie skryptów" Tag="B"/>
+            <TabItem Header="Sprawdzanie rozkładu jazdy" Tag="A"/>
+            <TabItem Header="Import danych startowych" Tag="B"/>
         </TabControl>
 
         <ContentControl x:Name="MainContent" Grid.Row="1"/>

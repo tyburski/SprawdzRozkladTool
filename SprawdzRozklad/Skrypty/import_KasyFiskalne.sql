@@ -1,5 +1,5 @@
-USE [%DB%]
-GO
+--USE [%DB%]
+--GO
 
 SET NOCOUNT ON;
 --tworzenie tabeli

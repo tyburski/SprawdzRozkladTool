@@ -629,12 +629,12 @@ namespace SprawdzRozklad.Views
 
         }
         private void Save_Click(object sender, RoutedEventArgs e)
-        {
-            ToolTip tool = new ToolTip { Content = "Pomyślnie zapisano do pliku.", StaysOpen = false };
+        {        
+           
 
             if (string.IsNullOrWhiteSpace(Dispatcher.Invoke(() => textBox.Text)))
             {
-                tool.Content = "Brak tekstu do zapisania.";
+                ToolTip tool = new ToolTip { Content = "Brak tekstu do zapisania.", StaysOpen = false };
                 tool.IsOpen = true;
                 return;
             }
@@ -651,7 +651,7 @@ namespace SprawdzRozklad.Views
                 try
                 {
                     File.WriteAllText(dialog.FileName, Dispatcher.Invoke(() => textBox.Text));
-                    tool.IsOpen = true;
+                    MessageBox.Show("Pomyślnie zapisano do pliku.");
                 }
                 catch(Exception ex)
                 {

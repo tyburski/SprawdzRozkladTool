@@ -1,11 +1,11 @@
-USE [master]
-GO
-IF left(cast(SERVERPROPERTY('productversion') as varchar),2)>=13
-ALTER DATABASE [%DB%] SET COMPATIBILITY_LEVEL = 130 --przestawiam wersjê na 2016
-GO
+--USE [master]
+--GO
+--IF left(cast(SERVERPROPERTY('productversion') as varchar),2)>=13
+--ALTER DATABASE [%DB%] SET COMPATIBILITY_LEVEL = 130 --przestawiam wersjê na 2016
+--GO
 
-USE [%DB%]
-GO
+--USE [%DB%]
+--GO
 
 --tworzenie tabeli
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IMP_pracownicy]') AND type in (N'U'))

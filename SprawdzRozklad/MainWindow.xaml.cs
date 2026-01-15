@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using SprawdzRozklad.Views;
+using System;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
-using SprawdzRozklad.Views;
 
 
 namespace SprawdzRozklad
@@ -10,6 +12,11 @@ namespace SprawdzRozklad
         public MainWindow()
         {
             InitializeComponent();
+
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+
+            this.Title = $"Informica Migration Tool {version.Major}.{version.Minor}";
+
             MainContent.Content = new ViewA();
         }
 
